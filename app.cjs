@@ -16,38 +16,38 @@ app.use(express.static(__dirname));
 
 const mongoUri = 'mongodb+srv://abhineti68:KT8NZ5cqjqxNh6ie@cluster0.xovyh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your MongoDB connection string
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
-  const userSchema = new mongoose.Schema({
-      uid: {
-          type: String,
-          required: true,
-          unique: true,  // Ensure that UID is unique
-      },
-      user: {
-          name: {
-              type: String,
-              required: true, // Make the name field required
-          },
-          latitude: {
-              type: Number,
-          },
-          longitude: {
-              type: Number,
-          },
-          crops: [{
-              name: {
-                  type: String,
-                  required: true  // Crop name is required
-              },
-              water: {
-                  type: Number,
-                  required: true  // Water value is required
-              }
-          }]
-      }
-    });
+const userSchema = new mongoose.Schema({
+    uid: {
+        type: String,
+        required: true,
+        unique: true,  // Ensure that UID is unique
+    },
+    user: {
+        name: {
+            type: String,
+            required: true, // Make the name field required
+        },
+        latitude: {
+            type: Number,
+        },
+        longitude: {
+            type: Number,
+        },
+        crops: [{
+            name: {
+                type: String,
+                required: true  // Crop name is required
+            },
+            water: {
+                type: Number,
+                required: true  // Water value is required
+            }
+        }]
+    }
+});
 
 const User = mongoose.model('User', userSchema);
 
@@ -72,7 +72,7 @@ app.get('/authenticate', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-        res.sendFile(path.join(__dirname, 'dashboard.html'))
+    res.sendFile(path.join(__dirname, 'dashboard.html'))
 });
 
 app.get('/api/users/:uid', async (req, res) => {
@@ -100,11 +100,11 @@ app.get('/api/users/:uid', async (req, res) => {
 });
 
 app.post('/api/newuser/:uid', async (req, res) => {
-    const uid  = req.params.uid;
+    const uid = req.params.uid;
     const name = req.query.name;
     const latitude = req.query.latitude;
     const longitude = req.query.longitude;
-    try {  
+    try {
         const newUser = new User({
             uid: uid,
             user: {
@@ -126,7 +126,7 @@ app.post('/api/newuser/:uid', async (req, res) => {
     }
 });
 
-app.post('/api/newcrop/:uid', async (req,res) => {
+app.post('/api/newcrop/:uid', async (req, res) => {
     const { uid } = req.params;
     const { name, water } = req.body; // Assuming the crop data is sent in the request body
 
@@ -189,7 +189,7 @@ app.put('/api/updatelocation/:uid', async (req, res) => {
         // Find the user by UID and update the location fields
         const updatedUser = await User.findOneAndUpdate(
             { uid: uid }, // Filter by UID
-            { 
+            {
                 'user.latitude': latitude,
                 'user.longitude': longitude,
             }, // Update the user's location
@@ -207,6 +207,6 @@ app.put('/api/updatelocation/:uid', async (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
