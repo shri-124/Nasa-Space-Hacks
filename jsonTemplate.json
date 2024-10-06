@@ -1,0 +1,15 @@
+{
+    "user": {
+      "name": "John Doe",
+      "location": {
+        "city": "Los Angeles",
+        "state": "California"
+      }
+    },
+    "crops": [
+      { "name": "Corn", "water": 50, "icon": "🌽" },
+      { "name": "Wheat", "water": 30, "icon": "🌾" },
+      { "name": "Rice", "water": 70, "icon": "🍚" }
+    ]
+}
+  

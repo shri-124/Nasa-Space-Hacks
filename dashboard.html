@@ -1,0 +1,1157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AccuCrops - Dashboard</title>
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+
+header {
+  background-color: #4CAF50; /* Green accent */
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.welcome-message {
+  font-size: 24px;
+  flex-grow: 1; /* Makes the welcome message take up the available space */
+}
+
+.location-message {
+  font-size: 24px;
+  flex-grow: 1; /* Makes the welcome message take up the available space */
+}
+
+
+.location-button, .logout-button {
+  background-color: white;
+  color: #4CAF50; /* Green accent for buttons */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin-right: 15px; /* Adds space between the Location and Logout buttons */
+}
+
+.crops-button, .logout-button {
+  background-color: white;
+  color: #4CAF50; /* Green accent for buttons */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin-right: 15px; /* Adds space between the Location and Logout buttons */
+}
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: #f2f2f2; /* Background */
+  border-radius: 15px;
+}
+
+.data-card {
+  background-color: #ffffff; /* White card with a slight shadow */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.data-card h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333333; /* Dark neutral */
+}
+
+.data-card p {
+  font-size: 18px;
+  color: #666666; /* Lighter gray text */
+}
+
+.tabs {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  background-color: #e6e6e6; /* Light gray for the tabs background */
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+}
+
+.tab {
+  color: #4CAF50; /* Green for active state */
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+
+.tab:hover, .tab.active {
+  background-color: #4CAF50; /* Green active background */
+  color: white; /* White text on active tab */
+}
+
+.dashboard-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.data-section {
+  display: none;
+}
+
+.data-section.active {
+  display: block;
+}
+
+/* Weather Forecast Styling */
+#weatherCard {
+  width: auto; /* Let the card adapt its width automatically */
+  max-width: none; /* Remove max-width constraints */
+  display: inline-block; /* Make the card size depend on its contents */
+  padding: 20px; /* Add padding around the content */
+  margin: 0 auto; /* Center the card */
+  background-color: #ffffff; /* White card */
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.weather-forecast {
+  display: grid;
+  grid-template-columns: repeat(7, auto); /* Allow the grid to size each column based on content */
+  gap: 10px;
+  justify-content: space-between; /* Distribute evenly across the grid */
+  margin-top: 20px;
+}
+
+.weather-day {
+  text-align: center;
+  padding: 10px;
+  background-color: #e0f4e2; /* Light green background for weather cards */
+  border-radius: 10px;
+}
+
+.weather-day h4 {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.weather-icon {
+  font-size: 30px;
+  margin-bottom: 5px;
+}
+
+/* Modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #ffffff; /* White modal content */
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  position: relative;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.btn {
+  padding: 10px;
+  background-color: #4CAF50; /* Green button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  background-color: white;
+  z-index: 100;
+  list-style: none;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown li:hover {
+  background-color: #f0f0f0;
+}
+
+.modal-link {
+  color: #4CAF50; /* Green link for switching modals */
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 10px;
+  display: block;
+  text-align: center;
+}
+
+/* Styling for the graph container */
+#windChart {
+  width: 100%;
+  height: 300px; /* Adjust height as needed */
+  margin-bottom: 20px;
+}
+
+/* Wind Forecast Day Cards */
+#windDay1, #windDay2, #windDay3 {
+  background-color: #e0f4e2; /* Light green for wind forecast cards */
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+  </style>
+</head>
+<body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<header>
+  <div class="welcome-message" id="welcomeMessage">Welcome, User</div>
+  <div class="location-message" id = "location"> </div>
+  <button class="crops-button" id="cropsButton">Crops</button>
+  <button class="location-button" id="locationButton">Location</button>
+  <button class="logout-button" id="logoutButton">Logout</button>
+
+  <script>
+  </script>
+</header>
+
+<!-- Tabs for switching views -->
+<div class="tabs">
+  <div class="tab active" data-tab="weather">Weather</div>
+  <div class="tab" data-tab="water">Water Usage</div>
+  <div class="tab" data-tab="wind">Wind</div>
+  <div class="tab" data-tab="humidityDewPoint">Humidity & Dew Point</div>
+</div>
+
+<!-- Main Content Area -->
+<div class="dashboard-content">
+  <!-- Weather Section -->
+  <div class="data-section active" id="weatherSection">
+    <div class="dashboard-container">
+      <!-- Line chart for 9-day temperature trends -->
+      <div class="data-card">
+        <h3>9-Day Temperature Forecast</h3>
+        <canvas id="tempChart"></canvas> <!-- Placeholder for the temperature graph -->
+      </div>
+
+      <!-- Cards for next 3 days' weather forecast -->
+      <div class="weather-forecast">
+        <div class="weather-day" id="day1">
+          <h4>Day 1</h4>
+          <span class="weather-icon">☀️</span>
+          <p>High: <span id="high1">--</span>°F</p>
+          <p>Low: <span id="low1">--</span>°F</p>
+          <p>Chance of Precipitation: <span id="precip1">--</span>%</p>
+        </div>
+        <div class="weather-day" id="day2">
+          <h4>Day 2</h4>
+          <span class="weather-icon">☁️</span>
+          <p>High: <span id="high2">--</span>°F</p>
+          <p>Low: <span id="low2">--</span>°F</p>
+          <p>Chance of Precipitation: <span id="precip2">--</span>%</p>
+        </div>
+        <div class="weather-day" id="day3">
+          <h4>Day 3</h4>
+          <span class="weather-icon">🌧️</span>
+          <p>High: <span id="high3">--</span>°F</p>
+          <p>Low: <span id="low3">--</span>°F</p>
+          <p>Chance of Precipitation: <span id="precip3">--</span>%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Water Section -->
+  <div class="data-section" id="waterSection">
+    <div class="dashboard-container">
+      <!-- Bar chart for 9-day evapotranspiration -->
+      <div class="data-card">
+        <h3>9-Day Evapotranspiration Forecast</h3>
+        <canvas id="etChart"></canvas> <!-- Placeholder for the ET bar chart -->
+      </div>
+
+      <!-- Irrigation Recommendation for tomorrow -->
+      <div class="data-card">
+        <h3>Irrigation Recommendation: Tomorrow</h3>
+        <p><strong>Evapotranspiration:</strong> <span id="etTomorrow">--</span> mm</p>
+        <p><strong>Recommended Irrigation:</strong> <span id="irrigationRecommendation">--</span> mm</p>
+      </div>
+
+      <!-- Water Per Crop -->
+      <div class="data-card" id="waterPerCropCard">
+        <h3>Water Per Crop</h3>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Wind Section -->
+  <div class="data-section" id="windSection">
+    <div class="dashboard-container">
+      <div class="data-card">
+        <h3>9-Day Wind Forecast</h3>
+        <!-- Container for Wind Speed Graph -->
+        <canvas id="windChart"></canvas> <!-- Placeholder for graph -->
+      </div>
+
+      <!-- Card for the next day's wind forecast -->
+      <div class="data-card">
+        <h3>Wind Forecast: Tomorrow</h3>
+        <p><strong>Day:</strong> October 6, 2024</p>
+        <p><strong>Wind Speed:</strong> 11.6 km/h</p>
+      </div>
+
+      <!-- More detailed cards for each day -->
+      <div class="data-card" id="windDay1">
+        <h4>Oct 5, 2024</h4>
+        <p>Wind Speed: 12.2 km/h</p>
+      </div>
+      <div class="data-card" id="windDay2">
+        <h4>Oct 6, 2024</h4>
+        <p>Wind Speed: 11.6 km/h</p>
+      </div>
+      <div class="data-card" id="windDay3">
+        <h4>Oct 7, 2024</h4>
+        <p>Wind Speed: 9.8 km/h</p>
+      </div>
+      <!-- Continue for all 9 days -->
+    </div>
+  </div>
+
+  <!-- Humidity and Dew Point Section (formerly Soil Data) -->
+  <div class="data-section" id="humidityDewPointSection">
+    <div class="dashboard-container">
+      <!-- Line chart for 9-day humidity and dew point trends -->
+      <div class="data-card">
+        <h3>9-Day Humidity and Dew Point Forecast</h3>
+        <canvas id="humidityDewPointChart"></canvas> <!-- Placeholder for the line graph -->
+      </div>
+
+      <!-- Detailed forecast for tomorrow -->
+      <div class="data-card">
+        <h3>Forecast: Tomorrow</h3>
+        <p><strong>Humidity:</strong> <span id="humidityTomorrow">--</span>%</p>
+        <p><strong>Dew Point:</strong> <span id="dewPointTomorrow">--</span>°F</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- City/State Modal -->
+<div id="cityStateModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="closeCityStateModal">&times;</span>
+    <h2>Select Location by City/State</h2>
+    <form id="editLocationForm">
+      <div class="input-wrapper">
+        <label for="newCity">City</label>
+        <input type="text" id="newCity" name="newCity" required autocomplete="off">
+        <ul id="cityList" class="dropdown"></ul> <!-- Dropdown for city suggestions -->
+      </div>
+      <div class="input-wrapper">
+        <label for="newState">State</label>
+        <input type="text" id="newState" name="newState" required autocomplete="off">
+        <ul id="stateList" class="dropdown"></ul> <!-- Dropdown for state suggestions -->
+      </div>
+      <button type="submit" class="btn" id = citystateButtonn>Update Location</button>
+    </form>
+    <span class="modal-link" id="switchToLatLong">Search by Lat/Long</span> <!-- Switch to Lat/Long modal -->
+  </div>
+</div>
+
+<!-- Latitude/Longitude Modal -->
+<div id="latLongModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="closeLatLongModal">&times;</span>
+    <h2>Select Location by Latitude/Longitude</h2>
+    <form id="latLongForm">
+      <div class="input-wrapper">
+        <label for="latitude">Latitude</label>
+        <input type="text" id="latitude" name="latitude" required autocomplete="off">
+      </div>
+      <div class="input-wrapper">
+        <label for="longitude">Longitude</label>
+        <input type="text" id="longitude" name="longitude" required autocomplete="off">
+      </div>
+      <button type="submit" class="btn" id = latlongButtonn>Update Location</button>
+    </form>
+    <span class="modal-link" id="switchToCityState">Search by City/State</span> <!-- Switch back to City/State modal -->
+  </div>
+</div>
+
+<div id="cropsModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="closeCropsModal">&times;</span>
+    <h2>Enter Crops</h2>
+    <form id="cropsForm">
+      <div class="input-wrapper">
+        <label for="cropInput">Enter a Crop:</label>
+        <input type="text" id="cropInput" placeholder="Enter crop" autocomplete="off">
+      </div>
+      <button type="button" class="btn" id="addCropBtn">Add Crop</button>
+      <div class="input-wrapper">
+        <label for="cropsList">Crops:</label>
+        <textarea id="cropsList" rows="4" readonly></textarea>
+      </div>
+      <button type="button" class="btn" id="submitCropsBtn">Submit</button>
+    </form>
+  </div>
+</div>
+
+
+<!-- JavaScript to handle modal and location functionality -->
+<script type="module" src="firebase.js"></script>
+
+<script type="module">
+  import { signOutUser } from './firebase.js';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoutButton = document.getElementById('logoutButton');
+
+    logoutButton.addEventListener('click', function() {
+      signOutUser();
+    });
+  });
+</script>
+<script src="locationData.js"></script>
+
+<script>
+  const cropsButton = document.getElementById('cropsButton');
+  const cropsModal = document.getElementById('cropsModal');
+  const closeCropsModal = document.getElementById('closeCropsModal');
+  const cropInput = document.getElementById('cropInput');
+  const cropsList = document.getElementById('cropsList');
+  const addCropBtn = document.getElementById('addCropBtn');
+  const submitCropsBtn = document.getElementById('submitCropsBtn');
+  const locationButton = document.getElementById('locationButton');
+  const cityStateModal = document.getElementById('cityStateModal');
+  const latLongModal = document.getElementById('latLongModal');
+  const closeCityStateModal = document.getElementById('closeCityStateModal');
+  const closeLatLongModal = document.getElementById('closeLatLongModal');
+  const switchToLatLong = document.getElementById('switchToLatLong');
+  const switchToCityState = document.getElementById('switchToCityState');
+
+  let cropsArray = [];
+  let weatherDataGlobal = {}; // Global variable to store weather data
+
+document.addEventListener('DOMContentLoaded', async function() {
+
+const logoutButton = document.getElementById('logoutButton');
+
+    if (logoutButton) { // Ensure the element exists before setting the handler
+        logoutButton.addEventListener('click', function() {
+            signOutUser();
+        });
+    } else {
+        console.error("Logout button not found!");
+    }
+
+    function getQueryParameter(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    const uid = getQueryParameter('uid');
+
+    if (uid) {
+        alert("UID found: " + uid);
+
+        const fetchUrl = `/api/users/${uid}`;
+        console.log("Fetching user data from: ", fetchUrl);
+
+        try {
+            const response = await fetch(fetchUrl);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const user = await response.json();
+            const welcomeMessageDiv = document.getElementById('welcomeMessage');
+            const locationDiv = document.getElementById('location');
+            welcomeMessageDiv.innerText = `Welcome, ${user.name}`;
+            locationDiv.innerText = `Location: ${user.latitude}, ${user.longitude}`;
+
+            // Fetch weather data using fetchWeatherFromCoordinates function
+            const weatherData = await fetchWeatherFromCoordinates(user.latitude, user.longitude);
+
+            // Log the fetched weather data to the console
+<!--            console.log("Weather Data:", weatherData);-->
+
+            // Store the weather data in a global variable (if needed)
+            weatherDataGlobal = weatherData;
+            console.log("Weather Data:", weatherDataGlobal);
+
+            getWindDataFromWeather();
+            getHumidityDataFromWeather();
+
+            // Call functions to update the dashboard with new data
+            updateWeatherCards(weatherDataGlobal);
+            updateIrrigationRecommendation(weatherDataGlobal);
+
+
+
+        } catch (error) {
+            console.error('Error fetching user data or weather data:', error);
+            document.getElementById('welcomeMessage').innerText = 'Error fetching user data.';
+        }
+    } else {
+        alert("No UID found");
+        document.getElementById('welcomeMessage').innerText = 'No user ID provided.';
+    }
+});
+
+
+  cropsButton.addEventListener('click', () => {
+    cropsModal.style.display = 'flex';
+  });
+
+  // Close the crops modal when "x" is clicked
+  closeCropsModal.addEventListener('click', () => {
+    cropsModal.style.display = 'none';
+  });
+
+  // Add crop to the list when the "Add Crop" button is clicked
+  addCropBtn.addEventListener('click', () => {
+    const crop = cropInput.value.trim();
+    if (crop !== '') {
+      cropsArray.push(crop);
+      cropsList.value = cropsArray.join(', '); // Display the crops as a comma-separated string
+      cropInput.value = ''; // Clear the input field
+    }
+  });
+
+  // Close the modal when "Submit" is clicked
+  submitCropsBtn.addEventListener('click', () => {
+    alert(`Crops entered: ${cropsList.value}`);
+    cropsModal.style.display = 'none';
+    cropsArray = []; // Clear the array after submission
+    cropsList.value = ''; // Clear the textarea
+  });
+
+  window.onclick = function(event) {
+    if (event.target == cropsModal) {
+      cropsModal.style.display = 'none';
+    }
+    if (event.target == cityStateModal) {
+      cityStateModal.style.display = 'none';
+    }
+    if (event.target == latLongModal) {
+      latLongModal.style.display = 'none';
+    }
+};
+
+  locationButton.addEventListener('click', () => {
+    latLongModal.style.display = 'flex';
+  });
+
+  closeCityStateModal.addEventListener('click', () => {
+    cityStateModal.style.display = 'none';
+  });
+
+  closeLatLongModal.addEventListener('click', () => {
+    latLongModal.style.display = 'none';
+  });
+
+  // Switch to Lat/Long modal
+  switchToLatLong.addEventListener('click', () => {
+    cityStateModal.style.display = 'none';
+    latLongModal.style.display = 'flex';
+  });
+
+  // Switch to City/State modal
+  switchToCityState.addEventListener('click', () => {
+    latLongModal.style.display = 'none';
+    cityStateModal.style.display = 'flex';
+  });
+
+  // City and State Suggestion Logic
+  let cities = [];
+  let states = [];
+
+  const stateAbbreviations = {
+    "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
+    "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA",
+    "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL", "Indiana": "IN", "Iowa": "IA",
+    "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+    "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
+    "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH",
+    "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC",
+    "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA",
+    "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD", "Tennessee": "TN",
+    "Texas": "TX", "Utah": "UT", "Vermont": "VT", "Virginia": "VA", "Washington": "WA",
+    "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"
+  };
+
+  // Fetch city and state data from a CSV file (Replace 'List of All U.S. Counties and Cities Spreadsheet_exported.csv')
+  fetch('List of All U.S. Counties and Cities Spreadsheet_exported.csv')
+    .then(response => response.text())
+    .then(data => {
+      let rows = data.split('\n').slice(1); // Skip the header row
+      rows.forEach(row => {
+        let cols = row.split(',');
+        let city = cols[0].trim().replace(/^"|"$/g, ''); // Remove quotes
+        let state = cols[5].trim().replace(/^"|"$/g, ''); // Remove quotes
+
+        cities.push({ name: city, state: state });
+        if (!states.includes(state)) {
+          states.push(state);
+        }
+      });
+    });
+
+  // Show city suggestions when Enter is pressed
+  document.getElementById('newCity').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      let input = this.value.toLowerCase();
+      let filteredCities = cities.filter(city => city.name.toLowerCase().startsWith(input));
+      if (filteredCities.length > 0) {
+        displaySuggestions(filteredCities, 'city');
+      } else {
+        hideSuggestions('city');
+      }
+    }
+  });
+
+  // Show state suggestions when Enter is pressed
+  document.getElementById('newState').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      let input = this.value.toLowerCase();
+      let filteredStates = states.filter(state => state.toLowerCase().startsWith(input));
+      if (filteredStates.length > 0) {
+        displaySuggestions(filteredStates, 'state');
+      } else {
+        hideSuggestions('state');
+      }
+    }
+  });
+
+  function displaySuggestions(filteredData, type) {
+    let list = type === 'city' ? document.getElementById('cityList') : document.getElementById('stateList');
+    list.innerHTML = '';
+
+    filteredData.forEach(item => {
+      let li = document.createElement('li');
+      if (type === 'city') {
+        let abbreviation = stateAbbreviations[item.state] || item.state;
+        li.textContent = `${item.name}, ${abbreviation}`;
+      } else {
+        li.textContent = item;
+      }
+
+      li.addEventListener('click', function () {
+        if (type === 'city') {
+          document.getElementById('newCity').value = item.name;
+          document.getElementById('newState').value = item.state;
+        } else {
+          document.getElementById('newState').value = item;
+        }
+        hideSuggestions(type);
+      });
+
+      list.appendChild(li);
+    });
+
+    list.style.display = 'block';
+  }
+
+  function hideSuggestions(type) {
+    let list = type === 'city' ? document.getElementById('cityList') : document.getElementById('stateList');
+    list.innerHTML = '';
+    list.style.display = 'none';
+  }
+
+  document.addEventListener('click', function (event) {
+    if (!event.target.closest('.input-wrapper')) {
+      hideSuggestions('city');
+      hideSuggestions('state');
+    }
+  });
+
+  // Handle tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('.data-section');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      const sectionId = tab.dataset.tab + 'Section';
+      document.getElementById(sectionId).classList.add('active');
+    });
+  });
+
+  function getWindDataFromWeather() {
+    const windData = [];  // Declare windData inside the function
+    const windLabels = [];  // Declare windLabels inside the function
+
+    console.log("Wind Data (initial):", windData);
+    console.log("Wind Labels (initial):", windLabels);
+
+    // Check if weatherDataGlobal is valid
+    if (!weatherDataGlobal || typeof weatherDataGlobal !== 'object') {
+        console.error("weatherDataGlobal is null or undefined:", weatherDataGlobal);
+        return;
+    }
+
+    // Loop through the weatherDataGlobal dictionary
+    Object.keys(weatherDataGlobal).forEach(date => {
+        console.log("Date:", date); // Debugging
+
+        // Extract wind speed (index 3 in each array)
+        const windSpeed = weatherDataGlobal[date][3]; // Index 3 corresponds to wind_speed_mean_10m_1h
+        console.log("Wind Speed:", windSpeed); // Debugging
+
+        // Convert date format from YYYY-MM-DD to a more readable format like "Oct 5"
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+        console.log("Formatted Date:", formattedDate); // Debugging
+
+        windData.push(windSpeed);
+        windLabels.push(formattedDate);
+    });
+
+    console.log("Wind Data (final):", windData);
+    console.log("Wind Labels (final):", windLabels);
+
+    // Now you can call a function to create the chart using windData and windLabels
+    createWindChart(windData, windLabels); // Pass the data to the chart creation function
+}
+
+function createWindChart(windData, windLabels) {
+    const ctx = document.getElementById('windChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line', // Line chart for wind speed forecast
+        data: {
+            labels: windLabels, // Labels for the x-axis (dates)
+            datasets: [{
+                label: 'Wind Speed (km/h)',
+                data: windData,
+                borderColor: '#4CAF50', // Green line
+                backgroundColor: 'rgba(76, 175, 80, 0.2)', // Light green background
+                borderWidth: 2,
+                pointBackgroundColor: '#4CAF50', // Green points
+                fill: true, // Fill under the line
+                tension: 0.3 // Smooth curve
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true, // Always start from 0
+                    title: {
+                        display: true,
+                        text: 'Wind Speed (km/h)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y} km/h`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+  // Dummy forecast data for temperature trends (9 days)
+const tempData = [64.6, 64.7, 64.6, 63.9, 62.7, 61.7, 60.9, 61.3, 64.3]; // Temperatures for 9 days
+const tempLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates for the temperature chart
+
+// Create a chart for temperature data
+const tempCtx = document.getElementById('tempChart').getContext('2d');
+const tempChart = new Chart(tempCtx, {
+  type: 'line', // Line chart for temperature forecast
+  data: {
+    labels: tempLabels, // Labels for the x-axis (dates)
+    datasets: [{
+      label: 'Temperature (°F)',
+      data: tempData,
+      borderColor: '#FF5722', // Orange line
+      backgroundColor: 'rgba(255, 87, 34, 0.2)', // Light orange background
+      borderWidth: 2,
+      pointBackgroundColor: '#FF5722', // Orange points
+      fill: true, // Fill under the line
+      tension: 0.3 // Smooth curve
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: false, // Do not start from 0 for temperature
+        title: {
+          display: true,
+          text: 'Temperature (°F)'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Date'
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        enabled: true, // Tooltip when hovering on points
+        callbacks: {
+          label: function(context) {
+            return `${context.parsed.y} °F`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// Ensure weather section is visible by default
+document.getElementById('weatherSection').classList.add('active');
+
+// Dummy forecast data for 3 days
+const weatherData = [
+  { day: 'Oct 6, 2024', high: 72.6, low: 63.3, precip: 15, condition: 'sunny' },
+  { day: 'Oct 7, 2024', high: 70.2, low: 62.5, precip: 30, condition: 'cloudy' },
+  { day: 'Oct 8, 2024', high: 65.8, low: 61.2, precip: 50, condition: 'rainy' }
+];
+
+// Function to map weather conditions to icons
+function getWeatherIcon(condition) {
+  switch (condition.toLowerCase()) {
+    case 'sunny': return '☀️';
+    case 'cloudy': return '☁️';
+    case 'rainy': return '🌧️';
+    case 'stormy': return '⛈️';
+    case 'snowy': return '❄️';
+    default: return '❓'; // Default icon for unknown conditions
+  }
+}
+
+// Function to update the weather cards
+function updateWeatherCards() {
+  weatherData.forEach((data, index) => {
+    const dayElement = document.getElementById(`day${index + 1}`);
+    const highElement = document.getElementById(`high${index + 1}`);
+    const lowElement = document.getElementById(`low${index + 1}`);
+    const precipElement = document.getElementById(`precip${index + 1}`);
+
+    // Update the text content with the weather data
+    dayElement.querySelector('h4').textContent = data.day;
+    dayElement.querySelector('.weather-icon').textContent = getWeatherIcon(data.condition);
+    highElement.textContent = data.high;
+    lowElement.textContent = data.low;
+    precipElement.textContent = data.precip;
+  });
+}
+
+// Call the function to load and update weather cards
+updateWeatherCards();
+
+// Dummy evapotranspiration data (in mm) for 9 days
+const etData = [2.41, 2.46, 2.49, 2.52, 2.58, 2.68, 2.83, 3.00, 3.14]; // ET values for 9 days
+const etLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates
+
+// Create a bar chart for evapotranspiration data
+const etCtx = document.getElementById('etChart').getContext('2d');
+const etChart = new Chart(etCtx, {
+  type: 'bar', // Bar chart to show ET data
+  data: {
+    labels: etLabels, // Dates on x-axis
+    datasets: [{
+      label: 'Evapotranspiration (mm)',
+      data: etData,
+      backgroundColor: '#2196F3', // Blue bars
+      borderColor: '#1976D2', // Darker blue borders
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true, // Start y-axis from 0
+        title: {
+          display: true,
+          text: 'Evapotranspiration (mm)'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Date'
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        enabled: true, // Show tooltip on hover
+        callbacks: {
+          label: function(context) {
+            return `${context.parsed.y} mm`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// Function to calculate and display irrigation recommendation for tomorrow
+function updateIrrigationRecommendation() {
+  const etTomorrow = etData[1]; // Assuming the second value in the array is for tomorrow
+  const irrigationNeeded = etTomorrow * 1.2; // A simple formula to recommend 120% of ET
+
+  // Update the UI with calculated values
+  document.getElementById('etTomorrow').textContent = etTomorrow.toFixed(2); // Display ET for tomorrow
+  document.getElementById('irrigationRecommendation').textContent = irrigationNeeded.toFixed(2); // Recommended irrigation
+}
+
+// Call the function to display the recommendation
+updateIrrigationRecommendation();
+
+function getHumidityDataFromWeather() {
+    const humidityData = [];  // Declare humidity data array
+    const humidityLabels = [];  // Declare date labels array
+
+    console.log("Humidity Data (initial):", humidityData);
+    console.log("Labels (initial):", humidityLabels);
+
+    // Check if weatherDataGlobal is valid
+    if (!weatherDataGlobal || typeof weatherDataGlobal !== 'object') {
+        console.error("weatherDataGlobal is null or undefined:", weatherDataGlobal);
+        return;
+    }
+
+    // Loop through the weatherDataGlobal dictionary
+    Object.keys(weatherDataGlobal).forEach(date => {
+        console.log("Date:", date); // Debugging
+
+        // Extract humidity (index 4 corresponds to relative humidity)
+        const humidity = weatherDataGlobal[date][4];
+        console.log("Humidity:", humidity); // Debugging
+
+        // Convert date format from YYYY-MM-DD to a more readable format like "Oct 5"
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+        console.log("Formatted Date:", formattedDate); // Debugging
+
+        humidityData.push(humidity);
+        humidityLabels.push(formattedDate);
+    });
+
+    console.log("Humidity Data (final):", humidityData);
+    console.log("Labels (final):", humidityLabels);
+
+    // Now you can call a function to create the chart using humidity data
+    createHumidityChart(humidityData, humidityLabels); // Pass the data to the chart creation function
+}
+
+function createHumidityChart(humidityData, labels) {
+    const ctx = document.getElementById('humidityDewPointChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line', // Line chart for humidity forecast
+        data: {
+            labels: labels, // Labels for the x-axis (dates)
+            datasets: [{
+                label: 'Humidity (%)',
+                data: humidityData,
+                borderColor: '#4CAF50', // Green line for humidity
+                backgroundColor: 'rgba(76, 175, 80, 0.2)', // Light green background
+                borderWidth: 2,
+                pointBackgroundColor: '#4CAF50', // Green points
+                fill: true, // Fill under the line
+                tension: 0.3 // Smooth curve
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false, // Don't start from 0, as humidity is usually above 0
+                    title: {
+                        display: true,
+                        text: 'Percentage'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y}% Humidity`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+// Function to generate crop data p tags dynamically
+function populateWaterPerCrop() {
+    // Temporary string of crops (will be fetched from the backend later)
+    let cropsString = "corn, wheat, soybeans"; // Example string
+    let cropsArray = cropsString.split(", "); // Split the string into an array of crops
+    let waterPerCropCard = document.getElementById("waterPerCropCard"); // Select the Water Per Crop card
+
+    // Clear the card before adding new crop data
+    waterPerCropCard.innerHTML = "<h3>Water Per Crop</h3>";
+
+    // Generate p tags for each crop with a random water value
+    cropsArray.forEach(crop => {
+        let randomWaterValue = Math.floor(Math.random() * 10) + 1; // Random number between 1 and 10
+        let pTag = document.createElement("p");
+        pTag.innerHTML = `${crop}: ${randomWaterValue}ml`;
+        waterPerCropCard.appendChild(pTag); // Append the p tag to the card
+    });
+}
+
+// Call this function whenever needed, for now, you can call it to test
+populateWaterPerCrop();
+
+document.getElementById('latlongButtonn').addEventListener('click', function (event) {
+  event.preventDefault(); // Prevent form from refreshing the page
+
+  // Get latitude and longitude values from input fields
+  const latitude = document.getElementById('latitude').value;
+  const longitude = document.getElementById('longitude').value;
+
+  // Validate that both latitude and longitude are filled in
+  if (latitude && longitude) {
+    // Update the location div with the new values
+    const locationDiv = document.getElementById('location');
+    locationDiv.innerText = `Location: ${latitude}, ${longitude}`;
+
+    // Optionally close the modal after updating
+    document.getElementById('latLongModal').style.display = 'none';
+  } else {
+    alert('Please enter both latitude and longitude.');
+  }
+});
+
+
+</script>
+
+<script type="module" src="firebase.js"></script>
+
+</body>
+</html>

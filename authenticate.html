@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Needs to be implemented</title>
+    <script>
+        function displayData() {
+            const username = localStorage.getItem('username');
+            const password = localStorage.getItem('password');
+
+            document.getElementById('username').textContent = username ? username : "No username found";
+            document.getElementById('password').textContent = password ? password : "No password found";
+        }
+
+        document.addEventListener('DOMContentLoaded', displayData);
+    </script>
+</head>
+<body>
+    <h1>User Credentials</h1>
+    <p>Username</p>
+    <text id="username"></text>
+    <p>Password</p>
+    <text id="password">Password: </text>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AccuCrops - Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f2f2f2; /* Light gray background */
+      margin: 0;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      color: #4CAF50; /* Green accent */
+      font-weight: bold;
+    }
+
+    .login-container {
+      background: #fff;
+      border-radius: 15px;
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+      color: #333; /* Dark neutral text */
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      color: #666; /* Lighter gray for labels */
+      margin-bottom: 8px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+
+    .input-group input:focus {
+      border-color: #4CAF50; /* Green accent on focus */
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50; /* Green buttons */
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-bottom: 10px;
+    }
+
+    .btn:hover {
+      background-color: #388E3C; /* Darker green on hover */
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 10px;
+      width: 600px;
+      max-width: 90%;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover, .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Water Allocation Predictor</h1>
+</div>
+
+<div class="login-container">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+
+    <button type="submit" class="btn">Login</button>
+    <button type="button" id="signUpBtn" class="btn">Sign Up</button>
+  </form>
+</div>
+
+<!-- Sign Up Modal -->
+<div id="signUpModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Create Account</h2>
+    <form id="signUpForm">
+      <div class="input-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="input-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" name="signupEmail" required>
+      </div>
+      <div class="input-group">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" name="signupPassword" required>
+      </div>
+      <div class="input-group">
+        <label for="latitude">Latitude</label>
+        <input type="text" id="latitude" name="latitude" required>
+      </div>
+      <div class="input-group">
+        <label for="longitude">Longitude</label>
+        <input type="text" id="longitude" name="longitude" required>
+      </div>
+      <button type="submit" class="btn">Create Account</button>
+    </form>
+  </div>
+</div>
+
+<!-- Error pop-up modal -->
+<div id="errorModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close-error">&times;</span>
+    <h2>Error</h2>
+    <p id="errorMessage">Invalid User Authentication: Please check your email and password.</p>
+  </div>
+</div>
+
+<script src="welcome.js"></script>
+<script type="module" src="firebase.js"></script>
+
+</body>
+</html>
