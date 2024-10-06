@@ -572,6 +572,9 @@ const logoutButton = document.getElementById('logoutButton');
             weatherDataGlobal = weatherData;
             console.log("Weather Data:", weatherDataGlobal);
 
+            getTemperatureDataFromWeather();
+            getWaterDataFromWeather();
+            populateWaterPerCrop();
             getWindDataFromWeather();
             getHumidityDataFromWeather();
 
@@ -862,57 +865,91 @@ function createWindChart(windData, windLabels) {
     });
 }
 
+function getTemperatureDataFromWeather() {
+    const tempData = [];  // Declare array to hold temperature data
+    const tempLabels = [];  // Declare array to hold dates
 
-  // Dummy forecast data for temperature trends (9 days)
-const tempData = [64.6, 64.7, 64.6, 63.9, 62.7, 61.7, 60.9, 61.3, 64.3]; // Temperatures for 9 days
-const tempLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates for the temperature chart
-
-// Create a chart for temperature data
-const tempCtx = document.getElementById('tempChart').getContext('2d');
-const tempChart = new Chart(tempCtx, {
-  type: 'line', // Line chart for temperature forecast
-  data: {
-    labels: tempLabels, // Labels for the x-axis (dates)
-    datasets: [{
-      label: 'Temperature (°F)',
-      data: tempData,
-      borderColor: '#FF5722', // Orange line
-      backgroundColor: 'rgba(255, 87, 34, 0.2)', // Light orange background
-      borderWidth: 2,
-      pointBackgroundColor: '#FF5722', // Orange points
-      fill: true, // Fill under the line
-      tension: 0.3 // Smooth curve
-    }]
-  },
-  options: {
-    responsive: true,
-    scales: {
-      y: {
-        beginAtZero: false, // Do not start from 0 for temperature
-        title: {
-          display: true,
-          text: 'Temperature (°F)'
-        }
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Date'
-        }
-      }
-    },
-    plugins: {
-      tooltip: {
-        enabled: true, // Tooltip when hovering on points
-        callbacks: {
-          label: function(context) {
-            return `${context.parsed.y} °F`;
-          }
-        }
-      }
+    // Check if weatherDataGlobal is valid
+    if (!weatherDataGlobal || typeof weatherDataGlobal !== 'object') {
+        console.error("weatherDataGlobal is null or undefined:", weatherDataGlobal);
+        return;
     }
-  }
-});
+
+    // Loop through the weatherDataGlobal dictionary
+    Object.keys(weatherDataGlobal).forEach(date => {
+        console.log("Date:", date); // Debugging
+
+        // Extract temperature (for example, index 1 in the array)
+        const tempValue = weatherDataGlobal[date][1]; // Assuming index 1 corresponds to temperature
+        console.log("Temperature:", tempValue); // Debugging
+
+        // Convert date format from YYYY-MM-DD to a more readable format like "Oct 5"
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+        console.log("Formatted Date:", formattedDate); // Debugging
+
+        tempData.push(tempValue);
+        tempLabels.push(formattedDate);
+    });
+
+    console.log("Temperature Data (final):", tempData);
+    console.log("Labels (final):", tempLabels);
+
+    // Now call a function to create the chart using tempData and tempLabels
+    createTemperatureChart(tempData, tempLabels); // Pass the data to the chart creation function
+}
+
+function createTemperatureChart(tempData, tempLabels) {
+    const tempCtx = document.getElementById('tempChart').getContext('2d');
+    new Chart(tempCtx, {
+        type: 'line', // Line chart for temperature forecast
+        data: {
+            labels: tempLabels, // Labels for the x-axis (dates)
+            datasets: [{
+                label: 'Temperature (°F)',
+                data: tempData,
+                borderColor: '#FF5722', // Orange line
+                backgroundColor: 'rgba(255, 87, 34, 0.2)', // Light orange background
+                borderWidth: 2,
+                pointBackgroundColor: '#FF5722', // Orange points
+                fill: true, // Fill under the line
+                tension: 0.3 // Smooth curve
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false, // Do not start from 0 for temperature
+                    title: {
+                        display: true,
+                        text: 'Temperature (°F)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true, // Tooltip when hovering on points
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y} °F`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
 
 // Ensure weather section is visible by default
 document.getElementById('weatherSection').classList.add('active');
@@ -956,73 +993,10 @@ function updateWeatherCards() {
 // Call the function to load and update weather cards
 updateWeatherCards();
 
-// Dummy evapotranspiration data (in mm) for 9 days
-const etData = [2.41, 2.46, 2.49, 2.52, 2.58, 2.68, 2.83, 3.00, 3.14]; // ET values for 9 days
-const etLabels = ["Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13"]; // Dates
-
-// Create a bar chart for evapotranspiration data
-const etCtx = document.getElementById('etChart').getContext('2d');
-const etChart = new Chart(etCtx, {
-  type: 'bar', // Bar chart to show ET data
-  data: {
-    labels: etLabels, // Dates on x-axis
-    datasets: [{
-      label: 'Evapotranspiration (mm)',
-      data: etData,
-      backgroundColor: '#2196F3', // Blue bars
-      borderColor: '#1976D2', // Darker blue borders
-      borderWidth: 2
-    }]
-  },
-  options: {
-    responsive: true,
-    scales: {
-      y: {
-        beginAtZero: true, // Start y-axis from 0
-        title: {
-          display: true,
-          text: 'Evapotranspiration (mm)'
-        }
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Date'
-        }
-      }
-    },
-    plugins: {
-      tooltip: {
-        enabled: true, // Show tooltip on hover
-        callbacks: {
-          label: function(context) {
-            return `${context.parsed.y} mm`;
-          }
-        }
-      }
-    }
-  }
-});
-
-// Function to calculate and display irrigation recommendation for tomorrow
-function updateIrrigationRecommendation() {
-  const etTomorrow = etData[1]; // Assuming the second value in the array is for tomorrow
-  const irrigationNeeded = etTomorrow * 1.2; // A simple formula to recommend 120% of ET
-
-  // Update the UI with calculated values
-  document.getElementById('etTomorrow').textContent = etTomorrow.toFixed(2); // Display ET for tomorrow
-  document.getElementById('irrigationRecommendation').textContent = irrigationNeeded.toFixed(2); // Recommended irrigation
-}
-
-// Call the function to display the recommendation
-updateIrrigationRecommendation();
-
-function getHumidityDataFromWeather() {
-    const humidityData = [];  // Declare humidity data array
-    const humidityLabels = [];  // Declare date labels array
-
-    console.log("Humidity Data (initial):", humidityData);
-    console.log("Labels (initial):", humidityLabels);
+// Function to get water data (evapotranspiration) from weather data
+function getWaterDataFromWeather() {
+    const etData = [];  // Declare array to hold evapotranspiration data
+    const etLabels = [];  // Declare array to hold dates
 
     // Check if weatherDataGlobal is valid
     if (!weatherDataGlobal || typeof weatherDataGlobal !== 'object') {
@@ -1034,9 +1008,9 @@ function getHumidityDataFromWeather() {
     Object.keys(weatherDataGlobal).forEach(date => {
         console.log("Date:", date); // Debugging
 
-        // Extract humidity (index 4 corresponds to relative humidity)
-        const humidity = weatherDataGlobal[date][4];
-        console.log("Humidity:", humidity); // Debugging
+        // Extract evapotranspiration (for example, index 2 in the array)
+        const etValue = weatherDataGlobal[date][2]; // Assuming index 2 corresponds to evapotranspiration
+        console.log("Evapotranspiration:", etValue); // Debugging
 
         // Convert date format from YYYY-MM-DD to a more readable format like "Oct 5"
         const dateObj = new Date(date);
@@ -1046,42 +1020,144 @@ function getHumidityDataFromWeather() {
         });
         console.log("Formatted Date:", formattedDate); // Debugging
 
-        humidityData.push(humidity);
-        humidityLabels.push(formattedDate);
+        etData.push(etValue);
+        etLabels.push(formattedDate);
     });
 
-    console.log("Humidity Data (final):", humidityData);
-    console.log("Labels (final):", humidityLabels);
+    console.log("Evapotranspiration Data (final):", etData);
+    console.log("Labels (final):", etLabels);
 
-    // Now you can call a function to create the chart using humidity data
-    createHumidityChart(humidityData, humidityLabels); // Pass the data to the chart creation function
+    // Now you can call a function to create the chart using etData and etLabels
+    createETChart(etData, etLabels); // Pass the data to the chart creation function
 }
 
-function createHumidityChart(humidityData, labels) {
-    const ctx = document.getElementById('humidityDewPointChart').getContext('2d');
+// Function to create Evapotranspiration Chart
+function createETChart(etData, etLabels) {
+    const ctx = document.getElementById('etChart').getContext('2d');
     new Chart(ctx, {
-        type: 'line', // Line chart for humidity forecast
+        type: 'bar', // Bar chart to show ET data
         data: {
-            labels: labels, // Labels for the x-axis (dates)
+            labels: etLabels, // Labels for the x-axis (dates)
             datasets: [{
-                label: 'Humidity (%)',
-                data: humidityData,
-                borderColor: '#4CAF50', // Green line for humidity
-                backgroundColor: 'rgba(76, 175, 80, 0.2)', // Light green background
-                borderWidth: 2,
-                pointBackgroundColor: '#4CAF50', // Green points
-                fill: true, // Fill under the line
-                tension: 0.3 // Smooth curve
+                label: 'Evapotranspiration (mm)',
+                data: etData,
+                backgroundColor: '#2196F3', // Blue bars
+                borderColor: '#1976D2', // Darker blue borders
+                borderWidth: 2
             }]
         },
         options: {
             responsive: true,
             scales: {
                 y: {
-                    beginAtZero: false, // Don't start from 0, as humidity is usually above 0
+                    beginAtZero: true, // Start y-axis from 0
                     title: {
                         display: true,
-                        text: 'Percentage'
+                        text: 'Evapotranspiration (mm)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true, // Show tooltip on hover
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y} mm`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+// Function to calculate and display irrigation recommendation for tomorrow
+function updateIrrigationRecommendation(weatherDataGlobal) {
+    const etTomorrow = weatherDataGlobal[Object.keys(weatherDataGlobal)[1]][2]; // Assuming ET data is at index 2
+    const irrigationNeeded = etTomorrow * 1.2; // Recommend 120% of ET
+
+    // Update the UI with calculated values
+    document.getElementById('etTomorrow').textContent = etTomorrow.toFixed(2); // Display ET for tomorrow
+    document.getElementById('irrigationRecommendation').textContent = irrigationNeeded.toFixed(2); // Recommended irrigation
+}
+
+// Call the function to display the recommendation
+updateIrrigationRecommendation();
+
+function getHumidityDataFromWeather() {
+    const humidityData = [];  // Declare humidity data array
+    const dewPointData = [];  // Declare dew point data array
+    const humidityLabels = [];  // Declare date labels array
+
+    // Check if weatherDataGlobal is valid
+    if (!weatherDataGlobal || typeof weatherDataGlobal !== 'object') {
+        console.error("weatherDataGlobal is null or undefined:", weatherDataGlobal);
+        return;
+    }
+
+    // Loop through the weatherDataGlobal dictionary
+    Object.keys(weatherDataGlobal).forEach(date => {
+        // Extract humidity (index 4 corresponds to relative humidity)
+        const humidity = weatherDataGlobal[date][4];  // Assuming humidity is at index 4
+        const dewPoint = weatherDataGlobal[date][5];  // Assuming dew point is at index 5
+
+        humidityData.push(humidity);
+        dewPointData.push(dewPoint);
+        humidityLabels.push(new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    });
+
+    // Log the data for debugging
+    console.log("Humidity Data:", humidityData);
+    console.log("Dew Point Data:", dewPointData);
+
+    createHumidityChart(humidityData, dewPointData, humidityLabels); // Pass both data arrays and labels to the chart creation function
+}
+
+
+function createHumidityChart(humidityData, dewPointData, labels) {
+    const ctx = document.getElementById('humidityDewPointChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line', // Line chart for both humidity and dew point forecast
+        data: {
+            labels: labels, // Labels for the x-axis (dates)
+            datasets: [
+                {
+                    label: 'Humidity (%)',
+                    data: humidityData,
+                    borderColor: '#4CAF50', // Green line for humidity
+                    backgroundColor: 'rgba(76, 175, 80, 0.2)', // Light green background
+                    borderWidth: 2,
+                    pointBackgroundColor: '#4CAF50', // Green points
+                    fill: true, // Fill under the line
+                    tension: 0.3 // Smooth curve
+                },
+                {
+                    label: 'Dew Point (°F)',
+                    data: dewPointData,
+                    borderColor: '#FF5722', // Orange line for dew point
+                    backgroundColor: 'rgba(255, 87, 34, 0.2)', // Light orange background
+                    borderWidth: 2,
+                    pointBackgroundColor: '#FF5722', // Orange points
+                    fill: true, // Fill under the line
+                    tension: 0.3 // Smooth curve
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false, // Don't start from 0, as humidity and dew point are usually above 0
+                    title: {
+                        display: true,
+                        text: 'Percentage / °F'
                     }
                 },
                 x: {
@@ -1096,7 +1172,11 @@ function createHumidityChart(humidityData, labels) {
                     enabled: true,
                     callbacks: {
                         label: function(context) {
-                            return `${context.parsed.y}% Humidity`;
+                            if (context.dataset.label === 'Humidity (%)') {
+                                return `${context.parsed.y}% Humidity`;
+                            } else {
+                                return `${context.parsed.y} °F Dew Point`;
+                            }
                         }
                     }
                 }
@@ -1125,8 +1205,6 @@ function populateWaterPerCrop() {
     });
 }
 
-// Call this function whenever needed, for now, you can call it to test
-populateWaterPerCrop();
 
 document.getElementById('latlongButtonn').addEventListener('click', function (event) {
   event.preventDefault(); // Prevent form from refreshing the page
