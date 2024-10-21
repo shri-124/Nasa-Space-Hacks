@@ -1,14 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyAVQKRA6M1_d66Qd-FiVULSENowvPrOskg",
-    authDomain: "nasa-25279.firebaseapp.com",
-    projectId: "nasa-25279",
-    storageBucket: "nasa-25279.appspot.com",
-    messagingSenderId: "732860345193",
-    appId: "1:732860345193:web:8731a1f0e53a77b0b72bf8"
-};
+const firebaseConfig = require('./auth.js')
 
 let userUid = null;
 
